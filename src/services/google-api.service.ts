@@ -20,6 +20,7 @@ export const apiHandlerGApi = {
           part: "snippet",
           channelType: "any",
           order: "viewCount",
+          videoType: 'any'
         },
       },
       (response) => handleSuccess(response),

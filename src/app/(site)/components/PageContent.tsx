@@ -1,20 +1,21 @@
 "use client";
 import React, { useState, useCallback, useEffect } from "react";
-import type {InfoTrack, Song, YTSong} from "@/types/song";
+import toast from "react-hot-toast";
+import type { InfoTrack, YTSong } from "@/types/song";
 import { apiHandlerGApi } from "@/services/google-api.service";
 import { apiHandler } from "@/services/api-handler.service";
-import {useAppDispatch} from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
+import { pushToQueue } from "@/redux/slices/player.slice";
 import SongItem from "@/components/SongItem";
 import Loading from "@/components/Loading";
-import {pushToQueue} from "@/redux/slices/player.slice";
-import toast from "react-hot-toast";
 
 interface PageContentProps {}
 
 const PageContent: React.FC<PageContentProps> = () => {
   const [isLoading, setLoading] = useState(false);
   const [newestSongs, setNewestSongs] = useState<YTSong[] | []>([]);
-  const dispatch = useAppDispatch()
+
+  const dispatch = useAppDispatch();
 
   const fetchTrackPopular = useCallback(async () => {
     setLoading(true);
@@ -43,43 +44,48 @@ const PageContent: React.FC<PageContentProps> = () => {
     );
   }, []);
 
-  const handlePressSong = useCallback(async (id: string) => {
-    try {
-      const response = await apiHandler.getPlayableUrl(id);
+  const handlePressSong = useCallback(
+    async (id: string) => {
+      try {
+        const response = await apiHandler.getPlayableUrl(id);
 
-      if (response && !response?.data) {
-        toast.error('These is a error occurred. Try again')
-        return;
+        if (response && !response?.data) {
+          toast.error("These is a error occurred. Try again");
+          return;
+        }
+
+        if (response.data.length === 1) {
+          const song = response.data[0];
+
+          dispatch(
+            pushToQueue({
+              id: song.id,
+              image: song.metadata.videoDetails.thumbnails[1]?.url,
+              title: song.metadata.videoDetails?.title,
+              author: song.metadata.videoDetails.author?.name,
+              url: song.url,
+            }),
+          );
+        } else {
+          response.data?.map((item: InfoTrack) => {
+            const songTemp = {
+              id: item.id,
+              image: item.metadata.videoDetails.thumbnails[1]?.url,
+              title: item.metadata.videoDetails?.title,
+              author: item.metadata.videoDetails.author?.name,
+              url: item?.url,
+            };
+
+            dispatch(pushToQueue(songTemp));
+          });
+        }
+      } catch (e) {
+        toast.error("These is a error occurred. Try again");
+        throw new Error("Error get_playable_url " + e);
       }
-
-      if (response.data.length === 1) {
-        const song = response.data[0]
-
-        dispatch(pushToQueue({
-          id: song.id,
-          image: song.metadata.videoDetails.thumbnails[1]?.url,
-          title: song.metadata.videoDetails?.title,
-          author: song.metadata.videoDetails.author?.name,
-          url: song.url
-        }))
-      } else {
-        const data = response.data?.map((item: InfoTrack, index: number) => {
-          return {
-            id: item.id,
-            url: item?.url,
-            image: item.metadata.videoDetails.thumbnails[1]?.url,
-            title: item.metadata.videoDetails?.title,
-            author: item.metadata.videoDetails.author?.name,
-          };
-        });
-
-        dispatch(pushToQueue(data));
-      }
-    } catch (e) {
-      toast.error('These is a error occurred. Try again')
-      throw new Error("Error get_playable_url " + e);
-    }
-  }, [dispatch]);
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     fetchTrackPopular().then();

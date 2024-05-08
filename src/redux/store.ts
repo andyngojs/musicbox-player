@@ -6,14 +6,7 @@ import PlayerReducer from "@/redux/slices/player.slice";
 
 const combinedReducer = combineReducers({
   app: AppReducer,
-  player: persistReducer(
-    {
-      key: "music-box:player",
-      storage,
-      whitelist: [],
-    },
-    PlayerReducer,
-  ),
+  player: PlayerReducer,
 });
 
 export const store = configureStore({

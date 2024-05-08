@@ -4,11 +4,17 @@ import { Song } from "@/types/song";
 interface InitialState {
   queue: Song[];
   playingIndex: number;
+  histories: [];
+  isPlaying: boolean;
+  volume: number;
 }
 
 const initialState: InitialState = {
   queue: [],
   playingIndex: 0,
+  histories: [],
+  isPlaying: false,
+  volume: 1,
 };
 
 export const PlayerSlice = createSlice({
@@ -17,6 +23,9 @@ export const PlayerSlice = createSlice({
   reducers: {
     pushToQueue: (state, { payload }: PayloadAction<Song>) => {
       state.queue.push(payload);
+    },
+    removeToQueue: (state, { payload }) => {
+      state.queue = state.queue.filter((item) => item.id !== payload);
     },
     nextTrack: (state) => {
       if (state.playingIndex === state.queue.length - 1) {
@@ -36,8 +45,25 @@ export const PlayerSlice = createSlice({
 
       return state;
     },
+    setPlayingSong: (state, { payload }: PayloadAction<boolean>) => {
+      state.isPlaying = payload;
+    },
+    setVolume: (state, { payload }: PayloadAction<number>) => {
+      state.volume = payload;
+    },
+    clearAll: (state) => {
+      state.queue = []
+    }
   },
 });
 
-export const { pushToQueue, nextTrack, prevTrack } = PlayerSlice.actions;
+export const {
+  pushToQueue,
+  nextTrack,
+  prevTrack,
+  setPlayingSong,
+  setVolume,
+  removeToQueue,
+    clearAll
+} = PlayerSlice.actions;
 export default PlayerSlice.reducer;

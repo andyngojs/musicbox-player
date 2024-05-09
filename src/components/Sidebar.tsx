@@ -6,6 +6,8 @@ import { BiSearch } from "react-icons/bi";
 import Box from "@/components/Box";
 import SidebarItem from "@/components/SidebarItem";
 import Library from "@/components/Library";
+import QueueModal from "@/components/QueueModal";
+import { useAppSelector } from "@/redux/hooks";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -13,6 +15,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const pathName = usePathname();
+  const { isOpenQueueModal } = useAppSelector((state) => state.app);
 
   const routes = useMemo(
     () => [
@@ -47,12 +50,16 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
           </div>
         </Box>
         <Box className={"overflow-y-auto h-full"}>
-            <Library />
+          <Library />
         </Box>
       </div>
-        <main className={'h-full flex-1 overflow-y-auto py-2'}>
-            {children}
-        </main>
+      <main className={"h-full flex-1 overflow-y-auto py-2"}>
+        {children}
+
+        {isOpenQueueModal && (
+          <QueueModal className={`absolute top-2 bottom-[10px] w-[710px]`} />
+        )}
+      </main>
     </div>
   );
 };

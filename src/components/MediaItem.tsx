@@ -3,9 +3,10 @@ import React, { useCallback } from "react";
 import Image from "next/image";
 import type { Song } from "@/types/song";
 import { twMerge } from "tailwind-merge";
+import {SongSearchResponse} from "@/types/video-yt-search";
 
 interface MediaItemProps {
-  data: Song;
+  data: Song | SongSearchResponse;
   onClick?: (id: string) => void;
   className?: string;
 }

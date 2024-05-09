@@ -1,6 +1,7 @@
 import { gapi } from "google-api-javascript-client";
 import type { ApiConfig } from "@/types/api";
-import type { YouTubeVideoListResponse } from "@/types/video-yt-response";
+import type {YTVideoSearchResponse} from "@/types/video-yt-search";
+import type {YouTubeVideoListResponse} from "@/types/video-yt-response";
 import { createApi } from "@/utils/createApi";
 
 const GAPI_KEY = process.env.GOOGLE_API_KEY;
@@ -10,8 +11,8 @@ export const GAPI_DISCOVERY_YOUTUBE_V3: string =
   "https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest/";
 
 export const apiHandlerGApi = {
-  search(params: any = {}, handleSuccess: (data: any) => void) {
-    return baseApiHandlerGApi.get(
+  search(params: any = {}, handleSuccess: (data: YTVideoSearchResponse) => void) {
+    return baseApiHandlerGApi.get<YTVideoSearchResponse>(
       "search",
       params,
       {

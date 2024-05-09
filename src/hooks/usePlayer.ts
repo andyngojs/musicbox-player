@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo } from "react";
-import { Howl, Howler } from "howler";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Howl } from "howler";
+import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
-  clearAll,
   nextTrack,
   prevTrack,
   removeToQueue,
@@ -18,22 +18,25 @@ interface UsePlayerProps {
 export default function usePlayer({ songUrl, songId }: UsePlayerProps) {
   const dispatch = useAppDispatch();
   const { volume, isPlaying, queue } = useAppSelector((state) => state.player);
+  const [currentTimeTrack, setCurrentTime] = useState(0);
+  const [currentWidthTrack, setCurrentWidthTrack] = useState(0);
 
   const sound = useMemo(
     () =>
       new Howl({
         src: String(songUrl),
         html5: true,
-        autoplay: true,
+        preload: "metadata",
         onplay: () => {
           dispatch(setPlayingSong(true));
         },
         onend: () => {
           dispatch(setPlayingSong(false));
+
+          dispatch(removeToQueue(songId));
+
           if (queue.length > 1) {
             dispatch(nextTrack());
-          } else {
-            dispatch(removeToQueue(songId));
           }
         },
         onpause: () => dispatch(setPlayingSong(false)),
@@ -42,12 +45,20 @@ export default function usePlayer({ songUrl, songId }: UsePlayerProps) {
   );
 
   const handleNextSong = useCallback(() => {
+    if (sound.playing()) {
+      sound.pause();
+    }
+    setCurrentTime(0);
     dispatch(nextTrack());
-  }, [dispatch]);
+  }, [dispatch, sound]);
 
   const handlePrevSong = useCallback(() => {
+    if (sound.playing()) {
+      sound.pause();
+    }
+    setCurrentTime(0);
     dispatch(prevTrack());
-  }, [dispatch]);
+  }, [dispatch, sound]);
 
   const handlePlay = useCallback(() => {
     if (!isPlaying) {
@@ -75,16 +86,34 @@ export default function usePlayer({ songUrl, songId }: UsePlayerProps) {
     [dispatch, sound],
   );
 
+  const handleTimeUpdate = useCallback(() => {
+    if (sound.playing()) {
+      const width = Math.floor((sound.seek() / sound.duration()) * 100);
+
+      setCurrentTime(sound.seek());
+
+      setCurrentWidthTrack(width);
+    }
+  }, [sound]);
+
   useEffect(() => {
     sound.load();
 
+    let timerInterval;
+    timerInterval = setInterval(handleTimeUpdate, 1000);
+
     return () => {
       sound.unload();
-      // dispatch(clearAll())
+      clearInterval(timerInterval);
     };
-  }, [sound, dispatch]);
+  }, [sound, handleTimeUpdate]);
 
   return {
+    sound,
+    currentTimeTrack,
+    currentWidthTrack,
+    setCurrentTime,
+    setCurrentWidthTrack,
     handlePlay,
     handleNextSong,
     handlePrevSong,

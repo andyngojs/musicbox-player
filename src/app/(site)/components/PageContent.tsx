@@ -64,8 +64,11 @@ const PageContent: React.FC<PageContentProps> = () => {
               title: song.metadata.videoDetails?.title,
               author: song.metadata.videoDetails.author?.name,
               url: song.url,
+              duration: Number(song.metadata.videoDetails.lengthSeconds)
             }),
           );
+
+          toast.success('Added to queue successfully!')
         } else {
           response.data?.map((item: InfoTrack) => {
             const songTemp = {
@@ -74,9 +77,12 @@ const PageContent: React.FC<PageContentProps> = () => {
               title: item.metadata.videoDetails?.title,
               author: item.metadata.videoDetails.author?.name,
               url: item?.url,
+              duration: Number(item.metadata.videoDetails.lengthSeconds)
             };
 
             dispatch(pushToQueue(songTemp));
+
+            toast.success('Added to queue successfully!')
           });
         }
       } catch (e) {

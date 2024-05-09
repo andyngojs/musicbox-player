@@ -1,9 +1,11 @@
 "use client";
 import React from "react";
-import { YTSong } from "@/types/song";
+import MediaItem from "@/components/MediaItem";
+import {SongSearchResponse} from "@/types/video-yt-search";
+import LikeButton from "@/components/LikeButton";
 
 interface SearchContentProps {
-  songs: YTSong[];
+  songs: SongSearchResponse[];
 }
 
 const SearchContent: React.FC<SearchContentProps> = ({ songs }) => {
@@ -21,7 +23,11 @@ const SearchContent: React.FC<SearchContentProps> = ({ songs }) => {
         {songs.map(item => {
           return (
               <div key={item.id} className={'flex items-center gap-x-4 w-full'}>
-                <div className={'flex-1 '}></div>
+                <div className={'flex-1 '}>
+                    <MediaItem data={item} className={''} />
+
+                    <LikeButton songId={item.id} />
+                </div>
               </div>
           )
         })}

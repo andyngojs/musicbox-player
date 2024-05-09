@@ -3,24 +3,37 @@ import React, { useMemo } from "react";
 import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
 import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
+import * as RadixSlider from "@radix-ui/react-slider";
 
 import type { Song } from "@/types/song";
 
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import usePlayer from "@/hooks/usePlayer";
+
+import { formatTime } from "@/utils/player.util";
 
 import LikeButton from "@/components/LikeButton";
 import MediaItem from "@/components/MediaItem";
 import Slider from "@/components/Slider";
+import { PiQueueDuotone } from "react-icons/pi";
+import { openQueueModal } from "@/redux/slices/app.slice";
+import { twMerge } from "tailwind-merge";
 
 interface PlayerContentProps {
   song: Song;
 }
 
 const PlayerContent: React.FC<PlayerContentProps> = ({ song }) => {
+  const dispatch = useAppDispatch();
   const { volume, isPlaying } = useAppSelector((state) => state.player);
-console.log(song)
+  const { isOpenQueueModal } = useAppSelector((state) => state.app);
+
   const {
+    sound,
+    currentTimeTrack,
+    currentWidthTrack,
+    setCurrentTime,
+    setCurrentWidthTrack,
     handlePlay,
     handleNextSong,
     handlePrevSong,
@@ -41,7 +54,7 @@ console.log(song)
   return (
     <div className={"grid grid-cols-2 md:grid-cols-3 h-full"}>
       <div className={"flex w-full justify-start"}>
-        <div className={"flex items-center gap-x-4"}>
+        <div className={"flex items-center gap-x-2"}>
           <MediaItem data={song} className={"w-[238px]"} />
 
           <LikeButton songId={song?.id} />
@@ -54,48 +67,100 @@ console.log(song)
         <div
           onClick={handlePlay}
           className={
-            "h-10 w-10 flex items-center justify-center rounded-full bg-white p-1 cursor-pointer"
+            "h-8 w-8 flex items-center justify-center rounded-full bg-white p-1 cursor-pointer"
           }
         >
-          <Icon size={30} className={"text-black"} />
+          <Icon size={24} className={"text-black"} />
         </div>
       </div>
 
       <div
         className={
-          "hidden h-full md:flex justify-center items-center w-full max-w-[722px] gap-x-6"
+          "hidden h-full md:flex flex-col justify-center items-center w-full max-w-[740px]"
         }
       >
-        <AiFillStepBackward
-          onClick={handlePrevSong}
-          className={
-            "text-neutral-400 cursor-pointer hover:text-white transition"
-          }
-          size={30}
-        />
         <div
-          onClick={handlePlay}
           className={
-            "flex justify-center items-center h-10 w-10 rounded-full bg-white p-1 cursor-pointer"
+            "h-full md:flex justify-center items-center w-full gap-x-6"
           }
         >
-          <Icon size={30} className={"text-black"} />
+          <AiFillStepBackward
+            onClick={handlePrevSong}
+            className={
+              "text-neutral-400 cursor-pointer hover:text-white transition"
+            }
+            size={24}
+          />
+          <div
+            onClick={handlePlay}
+            className={
+              "flex justify-center items-center h-8 w-8 rounded-full bg-white p-1 cursor-pointer"
+            }
+          >
+            <Icon size={25} className={"text-black"} />
+          </div>
+          <AiFillStepForward
+            onClick={handleNextSong}
+            className={
+              "text-neutral-400 cursor-pointer hover:text-white transition"
+            }
+            size={24}
+          />
         </div>
-        <AiFillStepForward
-          onClick={handleNextSong}
+
+        <div
           className={
-            "text-neutral-400 cursor-pointer hover:text-white transition"
+            "h-full md:flex justify-center items-center w-full gap-x-3"
           }
-          size={30}
-        />
+        >
+          <span>{formatTime(currentTimeTrack)}</span>
+          <RadixSlider.Root
+            className={
+              "relative flex items-center select-none touch-none w-full h-10"
+            }
+            min={0}
+            max={100}
+            step={1}
+            value={[currentWidthTrack]}
+            onValueChange={(value) => {
+              let seconds = (sound.duration() / 100) * value[0];
+              sound.seek(seconds);
+              setCurrentTime(seconds);
+
+              setCurrentWidthTrack(Math.floor(Number(value[0])));
+            }}
+          >
+            <RadixSlider.Track
+              className={`bg-neutral-600 relative grow rounded-full h-[3px] w-[${currentWidthTrack}%]`}
+            >
+              <RadixSlider.Range
+                className={`absolute bg-yellow-500 rounded-full h-full `}
+              />
+            </RadixSlider.Track>
+          </RadixSlider.Root>
+          <span>{formatTime(Number(song.duration))}</span>
+        </div>
       </div>
 
-      <div className={"hidden md:flex w-full justify-end pr-2"}>
+      <div className={"hidden md:flex w-full items-center justify-end pr-2"}>
+        <div
+          className={"gap-x-2 mr-5"}
+          onClick={() => dispatch(openQueueModal())}
+        >
+          <PiQueueDuotone
+            size={24}
+            className={twMerge(
+              isOpenQueueModal ? "text-white" : "text-neutral-400",
+              "cursor-pointer",
+            )}
+          />
+        </div>
+
         <div className={"flex items-center gap-x-2 w-[120px]"}>
           <VolumeIcon
             onClick={toggleMuteSong}
-            size={34}
-            className={"cursor-pointer "}
+            size={30}
+            className={"cursor-pointer"}
           />
           <Slider value={volume} onChange={handleSetVolumeSong} />
         </div>

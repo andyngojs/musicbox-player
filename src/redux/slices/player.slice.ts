@@ -24,19 +24,27 @@ export const PlayerSlice = createSlice({
     pushToQueue: (state, { payload }: PayloadAction<Song>) => {
       state.queue.push(payload);
     },
-    removeToQueue: (state, { payload }) => {
-      state.queue = state.queue.filter((item) => item.id !== payload);
+    removeToQueue: (state, { payload }: PayloadAction<string>) => {
+      let arrTemp = [...state.queue];
+      arrTemp.filter((item) => item.id !== payload);
+
+      state.queue = arrTemp
     },
     nextTrack: (state) => {
+      state.isPlaying = false;
+
       if (state.playingIndex === state.queue.length - 1) {
         // go to first
         state.playingIndex = 0;
       } else {
         state.playingIndex = state.playingIndex + 1;
       }
+
       return state;
     },
     prevTrack: (state) => {
+      state.isPlaying = false;
+
       if (state.playingIndex > 0) {
         state.playingIndex = state.playingIndex - 1;
       } else {
@@ -51,9 +59,15 @@ export const PlayerSlice = createSlice({
     setVolume: (state, { payload }: PayloadAction<number>) => {
       state.volume = payload;
     },
-    clearAll: (state) => {
-      state.queue = []
-    }
+    clearQueue: (state) => {
+      state.queue = [];
+    },
+    setPlayer: (state, { payload }: PayloadAction<InitialState>) => {
+      return {
+        ...state,
+        ...payload,
+      };
+    },
   },
 });
 
@@ -64,6 +78,7 @@ export const {
   setPlayingSong,
   setVolume,
   removeToQueue,
-    clearAll
+  clearQueue,
+  setPlayer,
 } = PlayerSlice.actions;
 export default PlayerSlice.reducer;

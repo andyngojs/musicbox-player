@@ -1,12 +1,25 @@
 import {createSlice} from "@reduxjs/toolkit";
 
-const initialState = {}
+interface InitialState {
+    isOpenQueueModal: boolean;
+}
+
+const initialState: InitialState = {
+    isOpenQueueModal: false
+}
 
 export const AppSlice = createSlice({
     name: 'app',
     initialState,
-    reducers: {}
+    reducers: {
+        openQueueModal: (state) => {
+            state.isOpenQueueModal = true
+        },
+        closeQueueModal: (state) => {
+            state.isOpenQueueModal = false
+        }
+    }
 })
 
-export const {} = AppSlice.actions
+export const {openQueueModal, closeQueueModal} = AppSlice.actions
 export default AppSlice.reducer

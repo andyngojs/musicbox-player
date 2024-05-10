@@ -18,6 +18,7 @@ import Slider from "@/components/Slider";
 import { PiQueueDuotone } from "react-icons/pi";
 import { openQueueModal } from "@/redux/slices/app.slice";
 import { twMerge } from "tailwind-merge";
+import styles from '@/styles/Player.module.scss'
 
 interface PlayerContentProps {
   song: Song;
@@ -52,18 +53,29 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song }) => {
   );
 
   return (
-    <div className={"grid grid-cols-2 md:grid-cols-3 h-full"}>
+    <div className={twMerge("grid grid-cols-2 md:grid-cols-3 h-full", styles.content)}>
       <div className={"flex w-full justify-start"}>
         <div className={"flex items-center gap-x-2"}>
           <MediaItem data={song} className={"w-[238px]"} />
 
-          <LikeButton songId={song?.id} />
+          <LikeButton songId={song?.id} className={'hidden md:block'} />
         </div>
       </div>
 
+      {/*===== Mobile ======= */}
       <div
-        className={"flex md:hidden col-auto w-full justify-end items-center"}
+          onClick={() => {
+            dispatch(openQueueModal())
+          }}
+        className={"flex md:hidden col-auto w-full justify-end items-center gap-x-6"}
       >
+        <AiFillStepBackward
+            onClick={handlePrevSong}
+            className={
+              "text-neutral-400 cursor-pointer hover:text-white transition"
+            }
+            size={24}
+        />
         <div
           onClick={handlePlay}
           className={
@@ -72,7 +84,16 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song }) => {
         >
           <Icon size={24} className={"text-black"} />
         </div>
+
+        <AiFillStepForward
+          onClick={handleNextSong}
+          className={
+            "text-neutral-400 cursor-pointer hover:text-white transition"
+          }
+          size={24}
+        />
       </div>
+      {/*===== End ======= */}
 
       <div
         className={

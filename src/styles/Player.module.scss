@@ -1,0 +1,22 @@
+.outer {
+  transition: all 300ms ease-in-out;
+}
+
+  .content {
+    z-index: 999;
+    overflow: hidden;
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: #00000044;
+      backdrop-filter: blur(16px);
+      z-index: -1;
+      border-radius: 8px;
+      margin: 0 10px;
+    }
+  }

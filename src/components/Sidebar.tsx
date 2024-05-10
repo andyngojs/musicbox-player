@@ -53,11 +53,11 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
           <Library />
         </Box>
       </div>
-      <main className={"h-full flex-1 overflow-y-auto py-2"}>
+      <main className={"h-full w-[100vw] flex-1 overflow-y-auto overflow-hidden py-2"}>
         {children}
 
         {isOpenQueueModal && (
-          <QueueModal className={`absolute top-2 bottom-[10px] w-[710px]`} />
+          <QueueModal className={`absolute top-2 bottom-[80px] md:w-full lg:w-[710px]`} />
         )}
       </main>
     </div>

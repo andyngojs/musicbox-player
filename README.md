@@ -9,3 +9,8 @@
 - Add/Remove song to queue
 - ...
 
+### Tech stack
+
+- NextJS (Frontend, API)
+- third-party: Google API (Youtube Data V3)
+- Deployment: Cloudflare

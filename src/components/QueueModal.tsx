@@ -34,7 +34,7 @@ export const QueueModal: React.FC<QueueModalProps> = ({ className }) => {
       >
         <button
           className={
-            "bg-transparent border-[0.5px] border-neutral-600 rounded-md px-2 py-1"
+            "bg-transparent border-[0.5px] border-neutral-600 rounded-md px-2 py-1 text-white"
           }
         >
           Clear All
@@ -47,12 +47,14 @@ export const QueueModal: React.FC<QueueModalProps> = ({ className }) => {
         />
       </div>
 
-      <div className={"px-4 "}>
+      <div className={"px-4 w-full"}>
         {queue.map((item: Song, index: number) => {
           return (
             <div
               key={item.id}
-              className={"flex items-center justify-center gap-x-1.5 px-2"}
+              className={
+                "flex items-center justify-center gap-x-1.5 px-2 flex-1"
+              }
             >
               <span className={twMerge("font-medium")}>{index + 1}</span>
               <MediaItem
@@ -65,24 +67,25 @@ export const QueueModal: React.FC<QueueModalProps> = ({ className }) => {
                     Howler.stop();
                   }
                 }}
+                iconAfter={() => (
+                  <div
+                    onClick={() => {
+                      if (isPlaying) {
+                        dispatch(setPlayingSong(false));
+                        Howler.stop();
+                      }
+
+                      dispatch(removeToQueue({ songId: item.id, index }));
+                      if (index === queue.length - 1 && queue.length <= 1) {
+                        dispatch(closeQueueModal());
+                      }
+                    }}
+                    className={"cursor-pointer"}
+                  >
+                    <BiTrash size={24} className={"text-neutral-400"} />
+                  </div>
+                )}
               />
-
-              <div
-                onClick={() => {
-                  if (isPlaying) {
-                    dispatch(setPlayingSong(false));
-                    Howler.stop();
-                  }
-
-                  dispatch(removeToQueue({ songId: item.id, index }));
-                  if (index === queue.length - 1 && queue.length <= 1) {
-                    dispatch(closeQueueModal());
-                  }
-                }}
-                className={"cursor-pointer flex-1"}
-              >
-                <BiTrash size={24} className={"text-neutral-400"} />
-              </div>
             </div>
           );
         })}

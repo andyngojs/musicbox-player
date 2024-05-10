@@ -2,6 +2,8 @@
 import React from "react";
 import { useAppSelector } from "@/redux/hooks";
 import PlayerContent from "@/components/PlayerContent";
+import {twMerge} from "tailwind-merge";
+import styles from '@/styles/Player.module.scss'
 
 interface PlayerProps {}
 
@@ -13,7 +15,7 @@ const Player: React.FC<PlayerProps> = () => {
   }
 
   return (
-    <div className={"fixed bottom-0 bg-black w-full py-2 h-[80px] px-4"}>
+    <div className={twMerge("fixed bottom-[15px] rounded-lg w-full py-2 h-[80px] px-4", styles.outer)}>
       <PlayerContent song={queue[playingIndex]} />
     </div>
   );

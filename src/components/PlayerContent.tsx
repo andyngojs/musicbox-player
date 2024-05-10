@@ -138,7 +138,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song }) => {
               />
             </RadixSlider.Track>
           </RadixSlider.Root>
-          <span>{formatTime(Number(song.duration))}</span>
+          <span>{formatTime(Number(song?.duration) || sound.duration())}</span>
         </div>
       </div>
 

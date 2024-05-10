@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Howl } from "howler";
-import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   nextTrack,
@@ -9,6 +8,7 @@ import {
   setPlayingSong,
   setVolume,
 } from "@/redux/slices/player.slice";
+import {closeQueueModal} from "@/redux/slices/app.slice";
 
 interface UsePlayerProps {
   songUrl?: string;
@@ -27,17 +27,22 @@ export default function usePlayer({ songUrl, songId }: UsePlayerProps) {
         src: String(songUrl),
         html5: true,
         preload: "metadata",
+        // autoplay: true,
         onplay: () => {
           dispatch(setPlayingSong(true));
         },
         onend: () => {
           dispatch(setPlayingSong(false));
-
-          dispatch(removeToQueue(songId));
+          setCurrentTime(0)
+          setCurrentWidthTrack(0)
 
           if (queue.length > 1) {
             dispatch(nextTrack());
+          } else {
+            dispatch(closeQueueModal())
           }
+
+          dispatch(removeToQueue({ songId }));
         },
         onpause: () => dispatch(setPlayingSong(false)),
       }),

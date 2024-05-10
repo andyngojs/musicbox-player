@@ -1,10 +1,10 @@
 import React from "react";
 import Image from "next/image";
-import type { YTSong } from "@/types/song";
+import type {Song, YTSong} from "@/types/song";
 import PlayButton from "@/components/PlayButton";
 
 interface SongItemProps {
-  data: YTSong;
+  data: YTSong | Song;
   onPress?: (id: string) => void;
 }
 
@@ -31,7 +31,7 @@ const SongItem: React.FC<SongItemProps> = ({ data, onPress }) => {
         />
       </div>
       <div className={"flex flex-col items-start w-full pt-4 gap-y-1"}>
-        <p className={"font-bold truncate w-full"}>{data.name}</p>
+        <p className={"font-bold truncate w-full"}>{"title" in data ? data?.title : data?.name}</p>
         <p className={"text-neutral-400 text-sm pb-4 w-full truncate"}>
           By {data.author}
         </p>

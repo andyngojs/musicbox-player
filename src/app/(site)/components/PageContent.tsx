@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useCallback, useEffect } from "react";
 import toast from "react-hot-toast";
-import type { InfoTrack, YTSong } from "@/types/song";
+import type {InfoTrack, YTSong} from "@/types/song";
 import { apiHandlerGApi } from "@/services/google-api.service";
 import { apiHandler } from "@/services/api-handler.service";
 import { useAppDispatch } from "@/redux/hooks";

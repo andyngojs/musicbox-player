@@ -6,7 +6,7 @@ interface Song {
   image: string;
   title: string;
   author: string;
-  duration: number;
+  duration?: number;
 }
 
 export interface InfoTrack {

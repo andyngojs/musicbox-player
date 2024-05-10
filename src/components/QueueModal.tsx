@@ -7,7 +7,12 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import MediaItem from "@/components/MediaItem";
 import { closeQueueModal } from "@/redux/slices/app.slice";
 import { BiTrash } from "react-icons/bi";
-import { removeToQueue } from "@/redux/slices/player.slice";
+import {
+  removeToQueue,
+  setPlayingIndex,
+  setPlayingSong,
+} from "@/redux/slices/player.slice";
+import usePlayer from "@/hooks/usePlayer";
 
 interface QueueModalProps {
   className?: string;
@@ -50,10 +55,30 @@ export const QueueModal: React.FC<QueueModalProps> = ({ className }) => {
               className={"flex items-center justify-center gap-x-1.5 px-2"}
             >
               <span className={twMerge("font-medium")}>{index + 1}</span>
-              <MediaItem data={item} />
+              <MediaItem
+                data={item}
+                onClick={(id) => {
+                  dispatch(setPlayingIndex(index));
+
+                  if (isPlaying) {
+                    dispatch(setPlayingSong(false));
+                    Howler.stop();
+                  }
+                }}
+              />
 
               <div
-                onClick={() => dispatch(removeToQueue(item.id))}
+                onClick={() => {
+                  if (isPlaying) {
+                    dispatch(setPlayingSong(false));
+                    Howler.stop();
+                  }
+
+                  dispatch(removeToQueue({ songId: item.id, index }));
+                  if (index === queue.length - 1 && queue.length <= 1) {
+                    dispatch(closeQueueModal());
+                  }
+                }}
                 className={"cursor-pointer flex-1"}
               >
                 <BiTrash size={24} className={"text-neutral-400"} />

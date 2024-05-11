@@ -1,4 +1,5 @@
 "use client";
+import {useCallback} from "react";
 import Header from "@/components/Header";
 import ListItem from "@/components/ListItem";
 import PageContent from "@/app/(site)/components/PageContent";
@@ -13,14 +14,14 @@ export default function Home() {
   const dispatch = useAppDispatch();
   const { queue } = useAppSelector((state) => state.player);
 
-  const handlePlaySong = (song: Song) => {
+  const handlePlaySong = useCallback((song: Song) => {
     let indexExisted = queue.findIndex((item: Song) => item.id === song.id);
     if (indexExisted < 0) {
       dispatch(pushToQueue(song));
 
       toast.success("Added to queue successfully!");
     }
-  };
+  }, [queue, dispatch])
 
   return (
       <main className="bg-neutral-900 h-full w-full rounded-lg overflow-hidden overflow-y-auto">

@@ -1,3 +1,4 @@
+'use client'
 import { gapi } from "google-api-javascript-client";
 import type { ApiConfig } from "@/types/api";
 import type {YTVideoSearchResponse} from "@/types/video-yt-search";

@@ -1,3 +1,4 @@
+'use client'
 import axios, { AxiosRequestConfig } from "axios";
 
 const BASE_URL = "http://localhost:3000";

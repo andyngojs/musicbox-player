@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import ytdl from "@distube/ytdl-core";
 import type { InfoTrack } from "@/types/song";
 
+export const runtime = 'edge';
+
 export async function POST(req: NextRequest) {
   let data: InfoTrack[] = [];
   const res = await req.json();
